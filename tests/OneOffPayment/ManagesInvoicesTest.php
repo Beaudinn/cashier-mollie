@@ -155,7 +155,7 @@ class ManagesInvoicesTest extends BaseTestCase
         Event::assertDispatched(OrderCreated::class, function ($e) use ($order) {
             return $e->order->is($order);
         });
-        Event::assertDispatched(OrderProcessed::class, function(OrderProcessed $event) use ($order) {
+        Event::assertDispatched(OrderProcessed::class, function (OrderProcessed $event) use ($order) {
             return $event->order->is($order);
         });
     }
@@ -179,7 +179,7 @@ class ManagesInvoicesTest extends BaseTestCase
         Event::assertDispatched(OrderCreated::class, function ($e) use ($createdOrder) {
             return $e->order->is($createdOrder);
         });
-        Event::assertDispatched(OrderProcessed::class, function(OrderProcessed $event) use ($createdOrder) {
+        Event::assertDispatched(OrderProcessed::class, function (OrderProcessed $event) use ($createdOrder) {
             return $event->order->is($createdOrder);
         });
     }
@@ -196,7 +196,7 @@ class ManagesInvoicesTest extends BaseTestCase
         // The invoice should automatically be made in the appropriate currency,
         // even if the user doesn't specify it in the payment options.
         $createdOrder = $mandatedUser->invoiceFor('A potato', 100, [
-            'currency' => 'eur' // non default currency
+            'currency' => 'eur', // non default currency
         ]);
         $this->assertInstanceOf(Order::class, $createdOrder);
         $this->assertMoneyEURCents(100, $createdOrder->getTotal());
@@ -210,7 +210,7 @@ class ManagesInvoicesTest extends BaseTestCase
         Event::assertDispatched(OrderCreated::class, function ($e) use ($createdOrder) {
             return $e->order->is($createdOrder);
         });
-        Event::assertDispatched(OrderProcessed::class, function(OrderProcessed $event) use ($createdOrder) {
+        Event::assertDispatched(OrderProcessed::class, function (OrderProcessed $event) use ($createdOrder) {
             return $event->order->is($createdOrder);
         });
 
@@ -235,10 +235,10 @@ class ManagesInvoicesTest extends BaseTestCase
         Event::assertDispatched(OrderCreated::class, function ($e) use ($order) {
             return $e->order->is($order);
         });
-        Event::assertDispatched(OrderProcessed::class, function(OrderProcessed $event) use ($order) {
+        Event::assertDispatched(OrderProcessed::class, function (OrderProcessed $event) use ($order) {
             return $event->order->is($order);
         });
-        Event::assertDispatched(OrderPaymentPaid::class, function(OrderPaymentPaid $event) use ($order) {
+        Event::assertDispatched(OrderPaymentPaid::class, function (OrderPaymentPaid $event) use ($order) {
             return $event->order->is($order);
         });
     }
@@ -250,7 +250,7 @@ class ManagesInvoicesTest extends BaseTestCase
         $this->withoutExceptionHandling();
         $order = factory(Order::class)->create([
             // @see ManagesInvoicesTest@canInvoiceOpenTabWithoutAMandate
-            'mollie_payment_id' => $failedPaymentId = env('PAYMENT_FAILED_ID')
+            'mollie_payment_id' => $failedPaymentId = env('PAYMENT_FAILED_ID'),
         ]);
 
         $this->getMandatedUser();
@@ -261,7 +261,7 @@ class ManagesInvoicesTest extends BaseTestCase
 
         $response->assertStatus(200);
 
-        Event::assertDispatched(OrderPaymentFailed::class, function(OrderPaymentFailed $event) use ($order) {
+        Event::assertDispatched(OrderPaymentFailed::class, function (OrderPaymentFailed $event) use ($order) {
             return $event->order->is($order);
         });
     }

@@ -17,5 +17,4 @@ Route::namespace('\Laravel\Cashier\Http\Controllers')->group(function () {
         'webhooks/mollie/one-off-payment',
         'OneOffPaymentWebhookController@handleWebhook'
     );
-
 });

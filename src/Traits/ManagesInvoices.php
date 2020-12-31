@@ -140,7 +140,7 @@ trait ManagesInvoices
     public function invoice(array $paymentOptions = [])
     {
         // Normalize currency; set to default if it's missing, capitalize it.
-        if (!($paymentOptions['currency'] ?? false)) {
+        if (! ($paymentOptions['currency'] ?? false)) {
             $paymentOptions['currency'] = Cashier::usesCurrency();
         }
         $paymentOptions['currency'] = Str::upper($paymentOptions['currency']);
@@ -158,7 +158,7 @@ trait ManagesInvoices
 
         if ($this->validateMollieMandate()) {
             return Order::createFromItems($itemsToOrder, [
-                'currency' => $paymentOptions['currency']
+                'currency' => $paymentOptions['currency'],
             ])->processPayment();
         }
 

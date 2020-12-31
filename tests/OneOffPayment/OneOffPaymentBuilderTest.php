@@ -25,7 +25,7 @@ class OneOffPaymentBuilderTest extends BaseTestCase
         $builder = new OneOffPaymentBuilder($owner, [
             'description' => 'Test mandate payment',
             'redirectUrl' => 'https://www.example.com',
-            'webhookUrl' => 'https://www.example.com/mandate-webhook'
+            'webhookUrl' => 'https://www.example.com/mandate-webhook',
         ]);
 
         $builder->forItems(

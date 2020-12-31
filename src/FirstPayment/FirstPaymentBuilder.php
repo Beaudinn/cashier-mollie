@@ -5,9 +5,9 @@ namespace Laravel\Cashier\FirstPayment;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\FirstPayment\Actions\ActionCollection;
-use Laravel\Cashier\Traits\ParsesAndUpdatesRedirectUrls;
 use Laravel\Cashier\Mollie\Contracts\CreateMolliePayment;
 use Laravel\Cashier\Mollie\Contracts\UpdateMolliePayment;
+use Laravel\Cashier\Traits\ParsesAndUpdatesRedirectUrls;
 use Mollie\Api\Types\SequenceType;
 
 class FirstPaymentBuilder

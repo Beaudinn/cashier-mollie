@@ -115,5 +115,5 @@ return [
          * The default description for a one off payment, visible on both the invoice and the customer bank records.
          */
         'description' => 'Welcome to ' . config('app.name'),
-    ]
+    ],
 ];

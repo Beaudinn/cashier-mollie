@@ -16,7 +16,7 @@ trait ParsesAndUpdatesRedirectUrls
      */
     public function parseAndUpdateRedirectUrl(Payment $payment, $redirectUrl)
     {
-        if (!Str::contains($redirectUrl, '{payment_id}')) {
+        if (! Str::contains($redirectUrl, '{payment_id}')) {
             return $payment;
         }
 

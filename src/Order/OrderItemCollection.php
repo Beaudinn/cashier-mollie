@@ -165,7 +165,7 @@ class OrderItemCollection extends Collection
             throw new \LogicException('Calculating the total requires all items to have the same currency.');
         }
 
-        return $this->reduce(function($sum, $item) {
+        return $this->reduce(function ($sum, $item) {
             return $sum->add($item->getTotal());
         }, money(0, $this->first()->currency));
     }

@@ -394,7 +394,7 @@ trait Billable
     public function downloadInvoice($orderId, $data = [], $view = Invoice::DEFAULT_VIEW, Options $options = null)
     {
         /** @var Order $order */
-        $order = $this-src/FirstPayment/FirstPaymentBuilder.php>orders()->where('id', $orderId)->firstOrFail();
+        $order = $this - src / FirstPayment / FirstPaymentBuilder.php > orders()->where('id', $orderId)->firstOrFail();
 
         return $order->invoice()->download($data, $view, $options);
     }
