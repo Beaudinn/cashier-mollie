@@ -5,21 +5,20 @@
 
 <img src="https://info.mollie.com/hubfs/github/laravel-cashier/editorLaravel.jpg" />
 
-<!--
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/mollie/laravel-cashier.svg?style=flat-square)](https://packagist.org/packages/mollie/laravel-cashier)
--->
-[![Build Status](https://travis-ci.org/laravel/cashier-mollie.svg?branch=master)](https://travis-ci.org/laravel/cashier-mollie)
-<!--
-[![SensioLabsInsight](https://img.shields.io/sensiolabs/i/xxxxxxxxx.svg?style=flat-square)](https://insight.sensiolabs.com/projects/xxxxxxxxx)
-[![Quality Score](https://img.shields.io/scrutinizer/g/mollie/:package_name.svg?style=flat-square)](https://scrutinizer-ci.com/g/mollie/:package_name)
-[![Total Downloads](https://img.shields.io/packagist/dt/mollie/:package_name.svg?style=flat-square)](https://packagist.org/packages/mollie/:package_name)
--->
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/laravel/cashier-mollie.svg?style=flat-square)](https://packagist.org/packages/laravel/cashier-mollie)
+[![Github Actions](https://github.com/laravel/cashier-mollie/workflows/tests/badge.svg)](https://github.com/laravel/cashier-mollie/actions)
 
 Laravel Cashier provides an expressive, fluent interface to subscriptions using [Mollie](https://www.mollie.com)'s billing services.
 
 ## Installation
 
-You can pull this package in using composer:
+First, make sure to add the Mollie key to your `.env` file. You can obtain an API key from the [Mollie dashboard](https://www.mollie.com/dashboard/developers/api-keys):
+
+```dotenv
+MOLLIE_KEY="test_xxxxxxxxxxx"
+```
+
+Next, pull this package in using composer:
 
 ```bash
 composer require laravel/cashier-mollie "^1.0"
@@ -29,7 +28,7 @@ composer require laravel/cashier-mollie "^1.0"
 
 Once you have pulled in the package:
 
-1. Run `php artisan cashier:install`. 
+1. Run `php artisan cashier:install`.
 
 2. Add these fields to your billable model's migration (typically the default "create_user_table" migration):
 
@@ -43,29 +42,29 @@ Once you have pulled in the package:
 
 3. Run the migrations: `php artisan migrate`
 
-4. Set the `MOLLIE_KEY` in your .env file. You can obtain an API key from the [Mollie dashboard](https://www.mollie.com/dashboard/developers/api-keys):
+4. Ensure you have properly configured the `MOLLIE_KEY` in your .env file. You can obtain an API key from the [Mollie dashboard](https://www.mollie.com/dashboard/developers/api-keys):
 
     ```dotenv
-   MOLLIE_KEY="test_xxxxxxxxxxx"
+   MOLLIE_KEY="test_xxxxxxxxxxxxxxxxxxxxxx"
     ```
 
 5. Prepare the configuration files:
 
     - configure at least one subscription plan in `config/cashier_plans.php`.
-    
+
     - in `config/cashier_coupons.php` you can manage any coupons. By default an example coupon is enabled. Consider
-    disabling it before deploying to production. 
-    
+    disabling it before deploying to production.
+
     - the base configuration is in `config/cashier`. Be careful while modifying this, in most cases you will not need
     to.
 
 6. Prepare the billable model (typically the default Laravel User model):
-    
+
     - Add the `Laravel\Cashier\Billable` trait.
-    
+
     - Optionally, override the method `mollieCustomerFields()` to configure what billable model fields are stored while creating the Mollie Customer.
     Out of the box the `mollieCustomerFields()` method uses the default Laravel User model fields:
-     
+
     ```php
     public function mollieCustomerFields() {
         return [
@@ -75,9 +74,9 @@ Once you have pulled in the package:
     }
     ```
     Learn more about storing data on the Mollie Customer [here](https://docs.mollie.com/reference/v2/customers-api/create-customer#parameters).
-    
+
     - Implement `Laravel\Cashier\Order\Contracts\ProvidesInvoiceInformation` interface. For example:
-    
+
     ```php
    /**
     * Get the receiver information for the invoice.
@@ -102,13 +101,13 @@ Once you have pulled in the package:
     ```
 
 7. Schedule a periodic job to execute `Cashier::run()`.
-   
+
     ```php
     $schedule->command('cashier:run')
         ->daily() // run as often as you like (Daily, monthly, every minute, ...)
         ->withoutOverlapping(); // make sure to include this
     ```
-   
+
 You can find more about scheduling jobs using Laravel [here](https://laravel.com/docs/scheduling).
 
 🎉 You're now good to go :).
@@ -196,7 +195,7 @@ This will validate the coupon code and redeem it. The coupon will be applied to 
 Optionally, specify the subscription it should be applied to:
 
     $user->redeemCoupon('your-coupon-code', 'main');
-    
+
 By default all other active redeemed coupons for the subscription will be revoked. You can prevent this by setting the
 `$revokeOtherCoupons` flag to false:
 
@@ -241,7 +240,7 @@ if ($user->subscribedToPlan('monthly', 'main')) {
     //
 }
 ```
-    
+
 ### Cancelled Subscription Status
 
 To determine if the user was once an active subscriber, but has cancelled their subscription, you may use the `cancelled` method:
@@ -319,7 +318,7 @@ When changing the hard-coded value returned by the `taxPercentage` method, the t
 ```php
 $user->subscription('main')->syncTaxPercentage();
 ```
-    
+
 ### Subscription Anchor Date
 
 Not (yet) implemented, but you could make this work by scheduling `Cashier::run()` to only execute on a specific day of the month.
@@ -374,7 +373,7 @@ $user->newSubscription('main', 'monthly')
 
 This method will set the trial period ending date on the subscription record within the database.
 
-> {note} The customer will be redirected to the Mollie checkout page to make the first payment in order to register a mandate. You can modify the amount in the cashier config file. 
+> {note} The customer will be redirected to the Mollie checkout page to make the first payment in order to register a mandate. You can modify the amount in the cashier config file.
 
 > {note} If the customer's subscription is not cancelled before the trial ending date they will be charged as soon as the trial expires, so you should be sure to notify your users of their trial ending date.
 
@@ -436,7 +435,7 @@ $user = User::find(1);
 
 $user->newSubscription('main', 'monthly')->create();
 ```
-    
+
 ### Defining Webhook Event Handlers
 
 Cashier automatically handles subscription cancellation on failed charges.
@@ -458,11 +457,11 @@ As you may have noticed already, the payment flow described above is quite simil
 #### Adding an item to the tab
 If you wish to add something to the next upcoming order (or invoice for that matter),
 you can use the `tab` method on the model that is using the `Billable` trait.
- 
+
 From here on we take the `$user` as our `Billable` model.
 
 > **Important note:**
-> 
+>
 > You can put items on the tab without having a valid mandate for the user.
 > - When creating the invoice we will create a `RedirectToCheckoutResponse` if your customer doesn't have a valid mandate.
 > - When the user you are creating an order for already has a valid mandate, we will directly create the order.
@@ -488,10 +487,10 @@ $orderItem = $user->tab('A potato, not very premium', 100, [
 The order items that you put on the tab can be manually invoiced [using the `invoice` method](#invoicing-items-on-the-tab).
 If you only wish to put one item on the tab and invoice it immediately [have a look at `invoiceFor`](#putting-one-item-on-the-tab-and-invoicing-it-immediately).
 
-> **Important note:** 
-> 
+> **Important note:**
+>
 > Since `php artisan cashier:run` is usually scheduled to run daily, items you put on the tab (but don't immediately invoice) will be invoiced automatically.
-> If this is not what you want, [change the time the order item on the tab is processed.](changing-when-the-items-on-the-tab-should-be-invoiced) 
+> If this is not what you want, [change the time the order item on the tab is processed.](changing-when-the-items-on-the-tab-should-be-invoiced)
 
 #### Changing when the items on the tab should be invoiced.
 Since usually you have set `php artisan cashier:run` to run daily in your `App\Console\Kernel@schedule` method, the order items you put on the tab will be invoiced today/tomorrow.
@@ -519,7 +518,7 @@ $result = $user->invoiceFor('Something', 1000, [
     'webhookUrl' => config('cashier.one_off_payment.webhook_url'),
 
     // Optional. Is the default, will be used by Mollie if there is no mandate, after the user has paid.
-    'redirectUrl' => config('cashier.one_off_payment.redirect_url'), 
+    'redirectUrl' => config('cashier.one_off_payment.redirect_url'),
 
     // Optional. Default => null or empty array, which let's Mollie decide.
     'method' => config('cashier.one_off_payment.active_payment_methods'),
@@ -634,7 +633,7 @@ $result = $user->invoiceFor(
 
 Listen for the `OrderInvoiceAvailable` event (in the `Laravel\Cashier\Events` namespace).
 When a new order has been processed, you can grab the invoice by
-    
+
 ```php
 $invoice = $event->order->invoice();
 $invoice->view(); // get a Blade view
@@ -651,7 +650,7 @@ For list of invoices
 <ul class="list-unstyled">
     @foreach(auth()->user()->orders as $order)
     <li>
-        
+
         <a href="/download-invoice/{{ $order->id }}">
             {{ $order->invoice()->id() }} -  {{ $order->invoice()->date() }}
         </a>
@@ -675,14 +674,14 @@ It's possible to find a specific invoice by it's order id.
 
 ```php
 $user->findInvoice($orderId);
-```
+```routes/webhooks.php
 
 > If the invoice is not associated with the user you're searching for, it will throw an `UnauthorizedInvoiceAccessException`.
 
 ##### findInvoiceOrFail
 If you wish to show a 404 error page whenever the invoice is not found, you may use the `findInvoiceOrFail` method on your user.
 If the invoice can not be found, a `\Symfony\Component\HttpKernel\Exception\NotFoundHttpException` will be thrown.
-If the invoice doesn't belong to the user, it will throw a `\Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException`. 
+If the invoice doesn't belong to the user, it will throw a `\Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException`.
 In a standard Laravel application those exceptions will be turned in a proper 404 or respectively 403 HTTP response.
 
 ```php
@@ -691,7 +690,7 @@ $user->findInvoiceOrFail($orderId);
 
 ### Refunding Charges
 
-Coming soon. 
+Coming soon.
 
 ### Customer balance
 
@@ -707,7 +706,7 @@ __Use these with care:__
 
 ```php
 $credit = $user->credit('EUR');
-$user->addCredit(new Amount(10, 'EUR'); // add €10.00
+$user->addCredit(money(10, 'EUR')); // add €10.00
 $user->hasCredit('EUR');
 ```
 
@@ -732,7 +731,7 @@ class User extends Model
      * @example 'nl_NL'
      */
     public function getLocale() {
-        return $this->locale; 
+        return $this->locale;
     }
 }
 ```
@@ -772,7 +771,7 @@ An Invoice is available on the Order. Access it using `$event->order->invoice()`
 The payment for an order has failed.
 
 #### `OrderPaymentPaid` event
-The payment for an order was successful. 
+The payment for an order was successful.
 
 #### `OrderProcessed` event
 The order has been fully processed.
@@ -834,7 +833,7 @@ If required for your billable model, modify the cashier migrations for UUIDs:
 ```php
 // Replace this:
 $table->unsignedInteger('owner_id');
-    
+
 // By this:
 $table->uuid('owner_id');  
 ```
@@ -843,7 +842,7 @@ $table->uuid('owner_id');
 
 Cashier Mollie applies prorating by default. With prorating, customers are billed at the start of each billing cycle.
 
-This means that when the subscription quantity is updated or is switched to another plan: 
+This means that when the subscription quantity is updated or is switched to another plan:
 
 1. the billing cycle is reset
 2. the customer is credited for unused time, meaning that the amount that was overpaid is added to the customer's balance.
@@ -851,7 +850,7 @@ This means that when the subscription quantity is updated or is switched to anot
 all of the previous, including applying the credited balance to the Order.
 
 This does not apply to the `$subscription->swapNextCycle('other-plan')`, which simply waits for the next billing cycle
-to update the subscription plan. A common use case for this is downgrading the plan at the end of the billing cycle. 
+to update the subscription plan. A common use case for this is downgrading the plan at the end of the billing cycle.
 
 ### How can I load coupons and/or plans from database?
 
@@ -917,7 +916,7 @@ class Plan extends Model
     public function buildCashierPlan(): CashierPlan
     {
         $plan = new CashierPlan($this->name);
-        
+
         return $plan->setAmount(mollie_array_to_money($this->amount))
             ->setInterval($this->interval)
             ->setDescription($this->description)
@@ -963,7 +962,7 @@ You can obtain this key from the dashboard right after signing up.
 <env name="MOLLIE_KEY" value="YOUR_VALUE_HERE"/>
 ```
 
-**ID of a customer with a valid directdebit mandate** 
+**ID of a customer with a valid directdebit mandate**
 ```xml
 <env name="MANDATED_CUSTOMER_DIRECTDEBIT" value="YOUR_VALUE_HERE"/>
 ```
@@ -974,7 +973,7 @@ You can obtain this key from the dashboard right after signing up.
 ```
 
 **ID of a successful ("paid) payment by the customer**
-Use a 1000 EUR amount. 
+Use a 1000 EUR amount.
 ```xml
 <env name="PAYMENT_PAID_ID" value="YOUR_VALUE_HERE"/>
 ```

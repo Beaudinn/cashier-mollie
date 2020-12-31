@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\FirstPayment\Actions\ActionCollection;
 use Laravel\Cashier\Traits\ParsesAndUpdatesRedirectUrls;
+use Laravel\Cashier\Mollie\Contracts\CreateMolliePayment;
+use Laravel\Cashier\Mollie\Contracts\UpdateMolliePayment;
 use Mollie\Api\Types\SequenceType;
 
 class FirstPaymentBuilder
@@ -124,9 +126,23 @@ class FirstPaymentBuilder
     {
         $payload = $this->getMolliePayload();
 
+        /** @var CreateMolliePayment $createMolliePayment */
+        $createMolliePayment = app()->make(CreateMolliePayment::class);
+        $this->molliePayment = $createMolliePayment->execute($payload);
+
         $this->molliePayment = mollie()->payments()->create($payload);
 
-        $this->molliePayment = $this->parseAndUpdateRedirectUrl($this->molliePayment, $payload['redirectUrl']);
+        $redirectUrl = $payload['redirectUrl'];
+
+        // Parse and update redirectUrl
+        if (Str::contains($redirectUrl, '{payment_id}')) {
+            $redirectUrl = Str::replaceArray('{payment_id}', [$this->molliePayment->id], $redirectUrl);
+            $this->molliePayment->redirectUrl = $redirectUrl;
+
+            /** @var UpdateMolliePayment $updateMolliePayment */
+            $updateMolliePayment = app()->make(UpdateMolliePayment::class);
+            $this->molliePayment = $updateMolliePayment->execute($this->molliePayment);
+        }
 
         return $this->molliePayment;
     }
